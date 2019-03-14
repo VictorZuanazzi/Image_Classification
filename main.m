@@ -24,23 +24,29 @@ imshow(x_train{1})
 [x_vocab, x_svm, ~, y_svm] = split_data(x_train, y_train, 0.5, keep);
 
 % Create vocabulary
-vocabulary = create_vocabulary(x1, sampling_strategy, image_type, vocabulary_size);
+vocabulary = create_vocabulary(x_vocab, sampling_strategy, image_type, vocabulary_size);
 
 % Create the BoW for all images
-x_svm_BoW = BoW_representation(x_svm, sampling_strategy, image_type, vocabulary, false);
-x_test_BoW = BoW_representation(x_test, sampling_strategy, image_type, vocabulary, false);
+x_svm_BoW = BoW_representation_2(x_svm, sampling_strategy, image_type, vocabulary, false);
+x_test_BoW = BoW_representation_2(x_test, sampling_strategy, image_type, vocabulary, false);
 
+SVMModels = cell(5,1);
 %creates binary label for the class of interest.
-Y = y_svm == 1;
 
-%train the SVM
-SVMModel = fitcsvm(x_svm_BoW, Y');
+for i =1:length(keep)
+    
+    %binary label for the class
+    y = y_svm == keep(i);
+    
+    %train the SVM
+    SVMModels{i} = fitcsvm(x_svm_BoW, y', 'KernelFunction', 'rbf' );
+    
+    %get results of the model on the first 100 images of the test set
+    [label{i}, score{i}] = predict(SVMModels{i}, x_test_BoW(1:100,:));
+    
+end
 
 %make one prediction
-[label, score] = predict(SVMModel, x_test_BoW(1,:));
-imshow(x_test{1});
-disp(label)
-dis(score)
 
 
 
