@@ -6,41 +6,37 @@ function [descriptors] = feature_extraction(I, mode, sift_type)
     %sift_type: "gray", "RGB", "opponent", "None".
 %output:
     %descriptors: 128x3 descriptors of the image.
-    
-    
 
-    
+% Convert image to desired type
+grayscale_image = single(rgb2gray(I));
 switch sift_type
     case "gray"
-        I = single(rgb2gray(I));
-        descriptors = feature_extraction(I, mode, "None");
-        %descriptors = [descriptors; descriptors; descriptors];
-        
+        I = grayscale_image;
     case "RGB"
-        I = single(I);
-        descriptors = [feature_extraction(I(:,:,1), mode, "None");
-            feature_extraction(I(:,:,2), mode, "None");
-            feature_extraction(I(:,:,3), mode, "None")];
-        
+        I = single(I);      
     case "opponent"
         I = single(RGB2opponent(I));
-        descriptors = [feature_extraction(I(:,:,1), mode, "None");
-            feature_extraction(I(:,:,2), mode, "None");
-            feature_extraction(I(:,:,3), mode, "None")];
-        
+    otherwise
+        error("Incorrect image type");
 end
+[~,~,channels] = size(I);
 
-    
-    
+% Perform sift for desired sammpling strategy
+descriptors = [];
 switch mode
     case "dense"
-        %vl_dsift only does gray scale, single precision
-        %mathworks starting point: https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/29800/versions/3/previews/reco_toolbox/html/demo_denseSIFT.html
+        for c = 1:channels
+            [~, d] = vl_dsift(I(:,:,c));
+            descriptors = [descriptors; d];
+        end
     case "key point"
-        %vl_sift only does gray scale, single precision
-        
+        f = vl_sift(grayscale_image);
+        for c = 1:channels
+            [~, d] = vl_sift(I(:,:,c), 'Frames', f);
+            descriptors = [descriptors; d];
+        end
+    otherwise
+        error("Incorrect sampling strategy");
 end
-
-    
 end
 
