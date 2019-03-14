@@ -21,6 +21,7 @@ image_type = "gray";
 sampling_strategy = "key point";
 vocabulary_size = 100;
 
+
 descriptors = [];
 for i = 1:100
     d = feature_extraction(x_train{i}, sampling_strategy, image_type);
@@ -28,23 +29,8 @@ for i = 1:100
 end
 [~, vocabulary] = kmeans(double(descriptors), vocabulary_size);
 
-for i=1:1
-    d = feature_extraction(x_train{i}, sampling_strategy, image_type);
-    [num, ~] = size(d);
-    words = zeros(num, 1);
-    for s = 1:num
-        closest = -1;
-        closest_distance = Inf;
-        for v = 1:vocabulary_size
-            distance = norm(vocabulary(v,:) - double(d(s,:)));
-            if distance < closest_distance
-                closest = v;
-                closest_distance = distance;
-            end
-        end
-        words(s, 1) = closest;
-    end
-    histo = histogram(words, 100, 'Normalization', 'probability');
+BoW = BoW_representation(x2, "key point", "gray", vocabulary, false);
+
 end
         
 
