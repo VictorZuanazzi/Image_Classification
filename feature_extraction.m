@@ -3,7 +3,7 @@ function [descriptors] = feature_extraction(I, mode, sift_type)
 %input:
     %image: an rgb image to have its features extracted.
     %mode: "dense" or "key point". 
-    %sift_type: "gray", "RGB", "opponent", "None".
+    %sift_type: "gray", "RGB", "opponent".
 %output:
     %descriptors: 128x3 descriptors of the image.
 
