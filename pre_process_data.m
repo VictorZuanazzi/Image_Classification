@@ -16,5 +16,5 @@ im_dim = [96,96,3];
 %is it a airplane? is it a bird? No, it is sup... it is a bird.
 imshow(x_train{1})
 
-
+[x1, x2, y1, y2] = split_data(x_train, y_train, 0.1, keep);
 
