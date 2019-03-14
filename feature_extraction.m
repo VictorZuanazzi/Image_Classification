@@ -38,5 +38,6 @@ switch mode
     otherwise
         error("Incorrect sampling strategy");
 end
+descriptors = descriptors';
 end
 
