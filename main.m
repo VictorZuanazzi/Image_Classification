@@ -1,3 +1,5 @@
+clear all;
+
 %path to the training and test data
 train_path = "./Data/train.mat";
 test_path = "./Data/test.mat";
@@ -29,9 +31,8 @@ vocabulary = create_vocabulary(x_vocab, sampling_strategy, image_type, vocabular
 % Create the BoW for all images
 x_svm_BoW = BoW_representation_2(x_svm, sampling_strategy, image_type, vocabulary, false);
 x_test_BoW = BoW_representation_2(x_test, sampling_strategy, image_type, vocabulary, false);
-
+%train one model for each class
 SVMModels = cell(5,1);
-%creates binary label for the class of interest.
 
 for i =1:length(keep)
     
@@ -39,17 +40,37 @@ for i =1:length(keep)
     y = y_svm == keep(i);
     
     %train the SVM
-    SVMModels{i} = fitcsvm(x_svm_BoW, y', 'KernelFunction', 'rbf' );
+    SVMModels{i} = fitcsvm(x_svm_BoW, y, 'KernelFunction', 'rbf', 'Cost', [0,1;4,0]);
     
     %get results of the model on the first 100 images of the test set
-    [label{i}, score{i}] = predict(SVMModels{i}, x_test_BoW(1:100,:));
+    [label{i}, score{i}] = predict(SVMModels{i}, x_test_BoW);
     
+    %sorts images and labels by their scores to this class
+    [~, idx] = sort(score{i}(:,1));
+    sorted_imgs{i} = x_test(idx);
+    sorted_labels{i} = y_test(idx);
+    
+    %calculates Average Precision for the classifier
+    binary_labels = sorted_labels{i} == keep(i);
+    cumulative = cumsum(binary_labels);
+    precisions = cumulative .* binary_labels ./ (1:length(sorted_labels{i}))';
+    average_precisions(i) = sum(precisions)/sum(binary_labels);
+    
+    %display and save top 5 images
+    image(i)
+    top_im = [sorted_imgs{i}{1}, sorted_imgs{i}{2}, sorted_imgs{i}{3}, sorted_imgs{i}{4}, sorted_imgs{i}{5}];
+    imshow(top_im)
+    path = "./Results/";
+    name = path + "top5_class_" + num2str(keep(i)) + ".png";
+    saveas(gcf, name);
+    
+    %display and save bottom 5 images.
+    image(i*2)
+    bottom_im = [sorted_imgs{i}{end}, sorted_imgs{i}{end - 1}, sorted_imgs{i}{end - 2}, sorted_imgs{i}{end - 3}, sorted_imgs{i}{end - 4}];
+    imshow(bottom_im)
+    name = path + "bottom5_class_" + num2str(keep(i)) + ".png";
+    saveas(gcf, name);
 end
 
-%make one prediction
-
-
-
-
-
-
+%MAP over all classifiers
+MAP = mean(average_precisions);
