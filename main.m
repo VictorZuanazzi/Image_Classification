@@ -1,5 +1,14 @@
 clear all;
 
+%Experiments:
+%obligatory -> find optimal parameters from that to run the other tests.
+%different svm kernels (linear, rbf)
+%ammount of training data
+%change the ratio between vocab and train data
+%test on rotated images
+%change the clustering gaussian mixture models vs k-means
+%different classification
+
 %path to the training and test data
 train_path = "./Data/train.mat";
 test_path = "./Data/test.mat";
