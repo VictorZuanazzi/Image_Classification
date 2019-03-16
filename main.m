@@ -22,7 +22,7 @@ im_dim = [96,96,3];
 
 % Set parameters
 image_type = "gray";
-sampling_strategy = "key point";
+sampling_strategy = "dense"; %"key point";
 vocabulary_size = 400;
 
 %magic function that loads the images and reshapes them
@@ -30,6 +30,7 @@ vocabulary_size = 400;
 [x_test, y_test] = load_n_reshape(test_path, keep, im_dim);
 
 %is it a airplane? is it a bird? No, it is sup... it is a bird.
+figure(75);
 imshow(x_train{1})
 
 % Split training data into a part for the vocabulary and a part for the SVM
@@ -67,7 +68,7 @@ for i =1:length(keep)
     average_precisions(i) = sum(precisions)/sum(binary_labels);
     
     %display and save top 5 images
-    image(i)
+    figure(i)
     top_im = [sorted_imgs{i}{1}, sorted_imgs{i}{2}, sorted_imgs{i}{3}, sorted_imgs{i}{4}, sorted_imgs{i}{5}];
     imshow(top_im)
     path = "./Results/";
@@ -75,7 +76,7 @@ for i =1:length(keep)
     saveas(gcf, name);
     
     %display and save bottom 5 images.
-    image(i*2)
+    figure(i*2)
     bottom_im = [sorted_imgs{i}{end}, sorted_imgs{i}{end - 1}, sorted_imgs{i}{end - 2}, sorted_imgs{i}{end - 3}, sorted_imgs{i}{end - 4}];
     imshow(bottom_im)
     name = path + "bottom5_class_" + num2str(keep(i)) + ".png";
@@ -84,5 +85,10 @@ end
 
 %MAP over all classifiers
 MAP = mean(average_precisions);
+
+csvwrite("MAP.csv",MAP);
+csvwrite("average_precisions.csv", average_precisions);
+csvwrite("label.csv", label);
+csvwrite("score.csv", score);
 
 toc %output runtime
