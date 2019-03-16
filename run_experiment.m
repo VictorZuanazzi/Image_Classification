@@ -1,4 +1,4 @@
-function [MAP, average_precisions, label, score] = run_experiment(sift_type, sampling_mode, vocab_size,train_subset, split_rate, feature_type, clust_type)
+function [MAP, average_precisions, label, score] = run_experiment(x_train, y_train, x_test, y_test, classes, class_name, sift_type, sampling_mode, vocab_size,train_subset, split_rate, feature_type, clust_type)
 %runs all experiments for us.
 %inputs:
     %sift_type: str, "gray", "RGB" or "opponent"
@@ -9,7 +9,7 @@ function [MAP, average_precisions, label, score] = run_experiment(sift_type, sam
     %data that is used for building the vocabulary.
     %feature_type: NOT IMPLEMENTED YET. "sift" or ___, choses the method 
     %for feature extraction.
-    %clust_type: NOT IMPLEMENTED YET. "kmeans" or ___, choses the 
+    %clust_type: NOT IMPLEMENTED YET.isin "kmeans" or ___, choses the 
     %clustering method for feature extraction.
 %outputs:
     %MAP: mean average precision of all classifiers.
@@ -18,44 +18,30 @@ function [MAP, average_precisions, label, score] = run_experiment(sift_type, sam
     %score: certanty level of each classification of the test set for each
     %classifer.
 
-%Experiments:
-%obligatory -> find optimal parameters from that to run the other tests.
-%different svm kernels (linear, rbf)
-%ammount of training data
-%change the ratio between vocab and train data
-%change the clustering gaussian mixture models vs k-means
-%different classification
-
-%path to the training and test data
-train_path = "./Data/train.mat";
-test_path = "./Data/test.mat";
-
-%only keep the classes of interest
-class_name = ["airplane", "bird", "ship", "horse", "car"];
-classes = [1, 2, 9, 7, 3];
-
-%final dimensions of the images
-im_dim = [96,96,3];
-
-%magic function that loads the images and reshapes them
-[x_train, y_train] = load_n_reshape(train_path, classes, im_dim);
-[x_test, y_test] = load_n_reshape(test_path, classes, im_dim);
-
+%create progress bar
+p_bar = waitbar(0, 'Initializing...', 'Name', 'Running experiment');
+    
 % Use a subset of the train data.
-if train_subset ~= "all"
+if isnumeric(train_subset)
+    waitbar(.05, p_bar, sprintf('selecting training subset: %.2f', train_subset))
     rate = train_subset/length(y_train);
     [x_train, ~, y_train, ~] = split_data(x_train, y_train, rate, classes);
-    train_subset = numwstr(train_subset);
+    train_subset = num2str(train_subset);
 end
 
 % Split training data into a part for the vocabulary and a part for the SVM
+waitbar(.1, p_bar, sprintf('spliting data for training, split rate: %.2f', split_rate));
 [x_vocab, x_svm, ~, y_svm] = split_data(x_train, y_train, split_rate, classes);
 
 % Create vocabulary
+waitbar(.2, p_bar, sprintf('creating vocabulary, sift type: %s vocab size: %.2f', sift_type, vocab_size));
 vocabulary = create_vocabulary(x_vocab, sampling_mode, sift_type, vocab_size);
 
 % Create the BoW for all images
+waitbar(.25, p_bar, sprintf('BoW representation of training data, sift type: %s sampling mode: %.2f', sift_type, sampling_mode));
 x_svm_BoW = BoW_representation_2(x_svm, sampling_mode, sift_type, vocabulary, false);
+
+waitbar(.3, p_bar, sprintf('BoW representation of test data, sift type: %s sampling mode: %.2f', sift_type, sampling_mode));
 x_test_BoW = BoW_representation_2(x_test, sampling_mode, sift_type, vocabulary, false);
 
 % Strings necessary to save the images with unique names.
@@ -72,6 +58,8 @@ average_precisions = zeros(1,5);
 
 %train one model for each class
 for i =1:length(classes)
+    
+    waitbar((.3+i/(length(classes)+5)), p_bar, sprintf('Training model: %s', class_name(i)));
     
     %binary label for the class
     y = y_svm == classes(i);
@@ -97,19 +85,21 @@ for i =1:length(classes)
     image(i)
     top_im = [sorted_imgs{i}{1}, sorted_imgs{i}{2}, sorted_imgs{i}{3}, sorted_imgs{i}{4}, sorted_imgs{i}{5}];
     imshow(top_im)
-    name = path + "top5_class_" + num2str(classe_name(i)) + experiment_name + ".png";
+    name = path + "top5_class_" + num2str(class_name(i)) + "_"  + experiment_name + ".png";
     saveas(gcf, name);
     
     %display and save bottom 5 images.
     image(i*2)
     bottom_im = [sorted_imgs{i}{end}, sorted_imgs{i}{end - 1}, sorted_imgs{i}{end - 2}, sorted_imgs{i}{end - 3}, sorted_imgs{i}{end - 4}];
     imshow(bottom_im)
-    name = path + "bottom5_class_" + num2str(classe_name(i)) + experiment_name + ".png";
+    name = path + "bottom5_class_" + num2str(class_name(i))  + "_" + experiment_name + ".png";
     saveas(gcf, name);
 end
 
 %MAP over all classifiers
 MAP = mean(average_precisions);
 
+waitbar(1, p_bar, 'Experiment finished');
 
+close(p_bar)
 end
