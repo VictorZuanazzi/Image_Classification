@@ -5,6 +5,11 @@ for i = 1:length(data)
     d = feature_extraction(data{i}, sampling_strategy, image_type);
     descriptors = [descriptors; d];
 end
-[~, vocabulary] = kmeans(double(descriptors), vocabulary_size);
+
+%k means
+stream = RandStream('mlfg6331_64');  % Random number stream
+options = statset('UseParallel',1,'UseSubstreams',1, 'Streams',stream);
+[~, vocabulary] = kmeans(double(descriptors), vocabulary_size, ...
+    'Options', options, 'MaxIter', 100, 'Display', 'final');
 end
 
