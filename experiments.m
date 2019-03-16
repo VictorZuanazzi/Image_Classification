@@ -5,7 +5,7 @@ clear all
 %sift_type: str, "gray", "RGB" or "opponent"
 sift_type = ["gray", "RGB", "opponent"];
 %sampling_mode: str, "dense", "key_points"
-sampling_mode = ["dense", "key_points"];
+sampling_mode = ["key point", "dense"];
 %vocab_size: int, number of image words in the vocabulary.
 vocab_size = [400, 1000, 4000];
 %train_subset: int or "all", define the size of the training set.
@@ -40,10 +40,10 @@ num_exp = length(sift_type)*length(sampling_mode)*length(vocab_size)*length(trai
 exp_bar = waitbar(0, sprintf('Will run %d experiments', num_exp), 'Name', 'All experiments');
 
 %initialize variables for better runtime
-MAP = cell(1, num_exp);
-average_precisions = cell(1, num_exp);
-label = cell(1, num_exp);
-score = cell(1, num_exp);
+MAP = cell(num_exp, 1);
+average_precisions = cell(num_exp, 1);
+label = cell(num_exp, 1);
+score = cell(num_exp, 1);
 
 %run all experiments in grid manner.
 c = 1;
@@ -55,9 +55,9 @@ for st = 1:length(sift_type)
                     for ft = 1:length(feature_type)
                         for ct = 1:length(clust_type)
                             tic;
-                            
+                            sprintf('%s %s %d', sift_type(st), sampling_mode(sm), vocab_size(vs))
                             waitbar((c/num_exp), exp_bar,  ...
-                                sprintf('%s %s %d', sift_type, sampling_mode, vocab_size));
+                                sprintf('%s %s %d', sift_type(st), sampling_mode(sm), vocab_size(vs)));
                             
                             [MAP{c}, average_precisions{c}, label{c}, score{c}] = run_experiment(x_train, y_train, x_test, y_test, classes, class_name, sift_type(st), sampling_mode(sm), vocab_size(vs), train_subset(ts), split_rate(sr), feature_type(ft), clust_type(ct));
                             c = c +1;
@@ -69,7 +69,12 @@ for st = 1:length(sift_type)
         end
     end
 end
-          
+
+csvwrite("MAP.csv",MAP);
+csvwrite("average_precisions.csv", average_precisions);
+csvwrite("label.csv", label);
+csvwrite("score.csv", score);
+
 close(exp_bar);
                             
                             
