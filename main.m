@@ -22,7 +22,8 @@ im_dim = [96,96,3];
 
 % Set parameters
 image_type = "gray";
-sampling_strategy = "dense"; %"key point";
+sampling_strategy = "dense";
+descriptor_type = 'liop';
 vocabulary_size = 400;
 
 %magic function that loads the images and reshapes them
@@ -37,11 +38,11 @@ imshow(x_train{1})
 [x_vocab, x_svm, ~, y_svm] = split_data(x_train, y_train, 0.5, keep);
 
 % Create vocabulary
-vocabulary = create_vocabulary(x_vocab, sampling_strategy, image_type, vocabulary_size);
+vocabulary = create_vocabulary(x_vocab, sampling_strategy, image_type, vocabulary_size, descriptor_type);
 
 % Create the BoW for all images
-x_svm_BoW = BoW_representation_2(x_svm, sampling_strategy, image_type, vocabulary, false);
-x_test_BoW = BoW_representation_2(x_test, sampling_strategy, image_type, vocabulary, false);
+x_svm_BoW = BoW_representation_2(x_svm, sampling_strategy, image_type, descriptor_type, vocabulary, false);
+x_test_BoW = BoW_representation_2(x_test, sampling_strategy, image_type, descriptor_type, vocabulary, false);
 %train one model for each class
 SVMModels = cell(5,1);
 

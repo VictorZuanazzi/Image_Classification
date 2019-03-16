@@ -17,6 +17,7 @@ function [MAP, average_precisions, label, score] = run_experiment(x_train, y_tra
     %label: predicted labels for the test set for each classifier.
     %score: certanty level of each classification of the test set for each
     %classifer.
+feature_type = convertStringsToChars(feature_type);
 
 %create progress bar
 p_bar = waitbar(0, 'Initializing...', 'Name', 'Running experiment');
@@ -36,14 +37,14 @@ waitbar(.1, p_bar, sprintf('spliting data for training, split rate: %.2f', split
 % Create vocabulary
 waitbar(.2, p_bar, sprintf('creating vocabulary, sift type: %s vocab size: %.2f', sift_type, vocab_size));
 sprintf("sampling mode: %s, sift type: %s, vocab size: %d, x vocab: %d %d", sampling_mode, sift_type, vocab_size, size(x_vocab))
-vocabulary = create_vocabulary(x_vocab, sampling_mode, sift_type, vocab_size);
+vocabulary = create_vocabulary(x_vocab, sampling_mode, sift_type, vocab_size, feature_type);
 
 % Create the BoW for all images
 waitbar(.25, p_bar, sprintf('BoW representation of training data, sift type: %s sampling mode: %.2f', sift_type, sampling_mode));
-x_svm_BoW = BoW_representation_2(x_svm, sampling_mode, sift_type, vocabulary, false);
+x_svm_BoW = BoW_representation_2(x_svm, sampling_mode, sift_type, feature_type, vocabulary, false);
 
 waitbar(.3, p_bar, sprintf('BoW representation of test data, sift type: %s sampling mode: %.2f', sift_type, sampling_mode));
-x_test_BoW = BoW_representation_2(x_test, sampling_mode, sift_type, vocabulary, false);
+x_test_BoW = BoW_representation_2(x_test, sampling_mode, sift_type, feature_type, vocabulary, false);
 
 % Strings necessary to save the images with unique names.
 path = "./Results/";

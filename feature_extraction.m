@@ -1,15 +1,16 @@
-function [descriptors] = feature_extraction(I, mode, sift_type)
+function [descriptors] = feature_extraction(I, sampling_strategy, image_type, descriptor_type)
 %function to extract the features of an image.
 %input:
     %image: an rgb image to have its features extracted.
-    %mode: "dense" or "key point". 
-    %sift_type: "gray", "RGB", "opponent".
+    %image_type: "gray", "RGB", "opponent".
+    %sampling_strategy: "dense" or "key point". 
+    %descriptor_type: "sift" or "liop".
 %output:
-    %descriptors: 128x3 descriptors of the image.
+    %descriptors: descriptors of the image.
 
 % Convert image to desired type
 grayscale_image = single(rgb2gray(I));
-switch sift_type
+switch image_type
     case "gray"
         I = grayscale_image;
     case "RGB"
@@ -21,22 +22,21 @@ switch sift_type
 end
 [~,~,channels] = size(I);
 
-% Perform sift for desired sammpling strategy
-descriptors = [];
-switch mode
+switch sampling_strategy
     case "dense"
-        for c = 1:channels
-            [~, d] = vl_dsift(I(:,:,c), 'Step', 5, 'Size', 21);
-            descriptors = [descriptors; d];
-        end
+        f = vl_dsift(grayscale_image, 'Step', 5, 'Size', 21);
     case "key point"
         f = vl_sift(grayscale_image);
-        for c = 1:channels
-            [~, d] = vl_sift(I(:,:,c), 'Frames', f);
-            descriptors = [descriptors; d];
-        end
     otherwise
         error("Incorrect sampling strategy");
+end
+
+% Find descriptors using desired descriptor algorithm
+descriptors = [];
+
+for c = 1:channels
+    [~, d] = vl_covdet(I(:,:,c), 'Frames', f, 'descriptor', descriptor_type);
+    descriptors = [descriptors; d];
 end
 descriptors = descriptors';
 end

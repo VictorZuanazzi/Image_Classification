@@ -13,7 +13,7 @@ train_subset = ["all"];
 %split_rate: float between 0 and 1. Defines the portion of the training
 %data that is used for building the vocabulary.
 split_rate = [0.5];
-%feature_type: NOT IMPLEMENTED YET. "sift" or ___, choses the method 
+%feature_type: "sift" or "liop", choses the method 
 %for feature extraction.
 feature_type = ["sift"];
 %clust_type: NOT IMPLEMENTED YET. "kmeans" or ___, choses the 
