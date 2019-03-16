@@ -26,7 +26,7 @@ descriptors = [];
 switch mode
     case "dense"
         for c = 1:channels
-            [~, d] = vl_dsift(I(:,:,c));
+            [~, d] = vl_dsift(I(:,:,c), 'Step', 5, 'Size', 21);
             descriptors = [descriptors; d];
         end
     case "key point"
