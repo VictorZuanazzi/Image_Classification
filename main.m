@@ -8,6 +8,7 @@ clear all;
 %test on rotated images
 %change the clustering gaussian mixture models vs k-means
 %different classification
+tic;
 
 %path to the training and test data
 train_path = "./Data/train.mat";
@@ -83,3 +84,5 @@ end
 
 %MAP over all classifiers
 MAP = mean(average_precisions);
+
+toc %output runtime
