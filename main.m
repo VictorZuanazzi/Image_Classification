@@ -22,8 +22,9 @@ im_dim = [96,96,3];
 
 % Set parameters
 image_type = "gray";
-sampling_strategy = "dense";
-descriptor_type = 'liop';
+sampling_strategy = "key point";
+descriptor_type = 'sift';
+cluster_type = "kmedoids";
 vocabulary_size = 400;
 
 %magic function that loads the images and reshapes them
@@ -38,7 +39,7 @@ imshow(x_train{1})
 [x_vocab, x_svm, ~, y_svm] = split_data(x_train, y_train, 0.5, keep);
 
 % Create vocabulary
-vocabulary = create_vocabulary(x_vocab, sampling_strategy, image_type, vocabulary_size, descriptor_type);
+vocabulary = create_vocabulary(x_vocab, sampling_strategy, image_type, vocabulary_size, descriptor_type, cluster_type);
 
 % Create the BoW for all images
 x_svm_BoW = BoW_representation_2(x_svm, sampling_strategy, image_type, descriptor_type, vocabulary, false);
@@ -54,7 +55,7 @@ for i =1:length(keep)
     %train the SVM
     SVMModels{i} = fitcsvm(x_svm_BoW, y, 'KernelFunction', 'rbf', 'Cost', [0,1;4,0]);
     
-    %get results of the model on the first 100 images of the test set
+    %get results of the model on the test set
     [label{i}, score{i}] = predict(SVMModels{i}, x_test_BoW);
     
     %sorts images and labels by their scores to this class

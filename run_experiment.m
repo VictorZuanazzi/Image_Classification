@@ -7,9 +7,9 @@ function [MAP, average_precisions, label, score] = run_experiment(x_train, y_tra
     %train_subset: int or "all", define the size of the training set.
     %split_rate: float between 0 and 1. Defines the portion of the training
     %data that is used for building the vocabulary.
-    %feature_type: NOT IMPLEMENTED YET. "sift" or ___, choses the method 
+    %feature_type:  "sift" or "liop, choses the method 
     %for feature extraction.
-    %clust_type: NOT IMPLEMENTED YET.isin "kmeans" or ___, choses the 
+    %clust_type: "kmeans" or "kmedoids", choses the 
     %clustering method for feature extraction.
 %outputs:
     %MAP: mean average precision of all classifiers.
@@ -37,7 +37,7 @@ waitbar(.1, p_bar, sprintf('spliting data for training, split rate: %.2f', split
 % Create vocabulary
 waitbar(.2, p_bar, sprintf('creating vocabulary, sift type: %s vocab size: %.2f', sift_type, vocab_size));
 sprintf("sampling mode: %s, sift type: %s, vocab size: %d, x vocab: %d %d", sampling_mode, sift_type, vocab_size, size(x_vocab))
-vocabulary = create_vocabulary(x_vocab, sampling_mode, sift_type, vocab_size, feature_type);
+vocabulary = create_vocabulary(x_vocab, sampling_mode, sift_type, vocab_size, feature_type, clust_type);
 
 % Create the BoW for all images
 waitbar(.25, p_bar, sprintf('BoW representation of training data, sift type: %s sampling mode: %.2f', sift_type, sampling_mode));
@@ -69,7 +69,7 @@ for i =1:length(classes)
     %train the SVM
     SVMModels{i} = fitcsvm(x_svm_BoW, y, 'KernelFunction', 'rbf', 'Cost', [0,1;4,0]);
     
-    %get results of the model on the first 100 images of the test set
+    %get results of the model on the test set
     [label{i}, score{i}] = predict(SVMModels{i}, x_test_BoW);
     
     %sorts images and labels by their scores to this class

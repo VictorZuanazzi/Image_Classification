@@ -16,7 +16,7 @@ split_rate = [0.5];
 %feature_type: "sift" or "liop", choses the method 
 %for feature extraction.
 feature_type = ["sift"];
-%clust_type: NOT IMPLEMENTED YET. "kmeans" or ___, choses the 
+%clust_type: "kmeans" or "kmedoids", choses the 
 %clustering method for feature extraction.
 clust_type = ["kmeans"];
 
