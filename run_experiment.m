@@ -35,6 +35,7 @@ waitbar(.1, p_bar, sprintf('spliting data for training, split rate: %.2f', split
 
 % Create vocabulary
 waitbar(.2, p_bar, sprintf('creating vocabulary, sift type: %s vocab size: %.2f', sift_type, vocab_size));
+sprintf("sampling mode: %s, sift type: %s, vocab size: %d, x vocab: %d %d", sampling_mode, sift_type, vocab_size, size(x_vocab))
 vocabulary = create_vocabulary(x_vocab, sampling_mode, sift_type, vocab_size);
 
 % Create the BoW for all images
@@ -82,14 +83,14 @@ for i =1:length(classes)
     average_precisions(i) = sum(precisions)/sum(binary_labels);
     
     %display and save top 5 images
-    image(i)
+    figure(i)
     top_im = [sorted_imgs{i}{1}, sorted_imgs{i}{2}, sorted_imgs{i}{3}, sorted_imgs{i}{4}, sorted_imgs{i}{5}];
     imshow(top_im)
     name = path + "top5_class_" + num2str(class_name(i)) + "_"  + experiment_name + ".png";
     saveas(gcf, name);
     
     %display and save bottom 5 images.
-    image(i*2)
+    figure(i*2)
     bottom_im = [sorted_imgs{i}{end}, sorted_imgs{i}{end - 1}, sorted_imgs{i}{end - 2}, sorted_imgs{i}{end - 3}, sorted_imgs{i}{end - 4}];
     imshow(bottom_im)
     name = path + "bottom5_class_" + num2str(class_name(i))  + "_" + experiment_name + ".png";
