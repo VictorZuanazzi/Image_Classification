@@ -1,9 +1,10 @@
-function [BoW] = BoW_representation_2(x, sampling_mode, sift_type, vocabulary, display_hist)
+function [BoW] = BoW_representation_2(x, sampling_mode, sift_type, descriptor_type, vocabulary, display_hist)
 %creates the Bag of Word representation of each image.
 %input: 
     %x: type cell, containing the data.
     %sampling_mode: "dense" or "key point".
     %sift_type: "gray", "RGB" or "opponent".
+    %descriptor_type: 'sift' or 'liop'.
     %vocabulary: array with the sift vocabulary 
     %display_hist: bool, if true it displays the hist of all images (use
     %with care)
@@ -20,7 +21,7 @@ BoW = zeros(num_im, vocab_size);
 for i = 1:num_im
     
     %extract the relevant features of the image.
-    d = feature_extraction(x{i}, sampling_mode, sift_type);
+    d = feature_extraction(x{i}, sampling_mode, sift_type, descriptor_type);
     
     %find the closest vocabulary word for each descriptor of the image.
     [num, ~] = size(d);
