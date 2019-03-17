@@ -90,7 +90,7 @@ for i =1:length(classes)
     saveas(gcf, name);
     
     %display and save bottom 5 images.
-    figure(i*2)
+    figure(i+5)
     bottom_im = [sorted_imgs{i}{end}, sorted_imgs{i}{end - 1}, sorted_imgs{i}{end - 2}, sorted_imgs{i}{end - 3}, sorted_imgs{i}{end - 4}];
     imshow(bottom_im)
     name = path + "bottom5_class_" + num2str(class_name(i))  + "_" + experiment_name + ".png";
