@@ -88,14 +88,14 @@ for i =1:length(classes)
     top_im = [sorted_imgs{i}{1}, sorted_imgs{i}{2}, sorted_imgs{i}{3}, sorted_imgs{i}{4}, sorted_imgs{i}{5}];
     imshow(top_im)
     name = path + "top5_class_" + num2str(class_name(i)) + "_"  + experiment_name + ".png";
-    saveas(gcf, name);
+    export_fig(name);
     
     %display and save bottom 5 images.
     figure(i+5)
     bottom_im = [sorted_imgs{i}{end}, sorted_imgs{i}{end - 1}, sorted_imgs{i}{end - 2}, sorted_imgs{i}{end - 3}, sorted_imgs{i}{end - 4}];
     imshow(bottom_im)
     name = path + "bottom5_class_" + num2str(class_name(i))  + "_" + experiment_name + ".png";
-    saveas(gcf, name);
+    export_fig(name);
 end
 
 %MAP over all classifiers

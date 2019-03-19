@@ -24,7 +24,7 @@ im_dim = [96,96,3];
 image_type = "gray";
 sampling_strategy = "key point";
 descriptor_type = 'sift';
-cluster_type = "kmedoids";
+cluster_type = "kmeans";
 vocabulary_size = 400;
 
 %magic function that loads the images and reshapes them
@@ -75,14 +75,14 @@ for i =1:length(keep)
     imshow(top_im)
     path = "./Results/";
     name = path + "top5_class_" + num2str(keep(i)) + ".png";
-    saveas(gcf, name);
+    export_fig(name);
     
     %display and save bottom 5 images.
     figure(i*2)
     bottom_im = [sorted_imgs{i}{end}, sorted_imgs{i}{end - 1}, sorted_imgs{i}{end - 2}, sorted_imgs{i}{end - 3}, sorted_imgs{i}{end - 4}];
     imshow(bottom_im)
     name = path + "bottom5_class_" + num2str(keep(i)) + ".png";
-    saveas(gcf, name);
+    export_fig(name);
 end
 
 %MAP over all classifiers
