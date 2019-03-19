@@ -75,7 +75,7 @@ for i =1:length(keep)
     imshow(top_im)
     path = "./Results/";
     name = path + "top5_class_" + num2str(keep(i)) + ".png";
-    saveas(gcf, name);
+    export_fig(name);
     
     %display and save bottom 5 images.
     figure(i*2)
