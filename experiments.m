@@ -4,7 +4,7 @@ clear all
 
 %sift_type: str, "gray", "RGB" or "opponent"
 sift_type = ["gray", "RGB", "opponent"];
-%sampling_mode: str, "dense", "key_points"
+%sampling_mode: str, "dense", "key point"
 sampling_mode = ["key point", "dense"];
 %vocab_size: int, number of image words in the vocabulary.
 vocab_size = [400, 1000, 4000];
@@ -72,8 +72,6 @@ end
 
 csvwrite("MAP.csv",MAP);
 csvwrite("average_precisions.csv", average_precisions);
-csvwrite("label.csv", label);
-csvwrite("score.csv", score);
 
 close(exp_bar);
                             
