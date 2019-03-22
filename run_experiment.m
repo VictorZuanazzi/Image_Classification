@@ -48,7 +48,7 @@ x_test_BoW = BoW_representation_2(x_test, sampling_mode, sift_type, feature_type
 
 % Strings necessary to save the images with unique names.
 path = "./Results/";
-experiment_name = sift_type + "_" + sampling_mode + "_" + num2str(vocab_size) + "_" + train_subset + "_" + num2str(split_rate) + "_" + feature_type + "_" + clust_type;
+experiment_name = sift_type + "_" + sampling_mode + "_" + num2str(vocab_size) + "_" + train_subset + "_" + "_" + feature_type + "_" + clust_type;
     
 %initialize variables for lower run time.
 SVMModels = cell(1,5);
