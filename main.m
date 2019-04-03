@@ -59,9 +59,9 @@ for i =1:length(keep)
     [label{i}, score{i}] = predict(SVMModels{i}, x_test_BoW);
     
     %sorts images and labels by their scores to this class
-    [~, idx] = sort(score{i}(:,1));
-    sorted_imgs{i} = x_test(idx);
-    sorted_labels{i} = y_test(idx);
+    [~, idx{i}] = sort(score{i}(:,1));
+    sorted_imgs{i} = x_test(idx{i});
+    sorted_labels{i} = y_test(idx{i});
     
     %calculates Average Precision for the classifier
     binary_labels = sorted_labels{i} == keep(i);
@@ -84,6 +84,15 @@ for i =1:length(keep)
     name = path + "bottom5_class_" + num2str(keep(i)) + ".png";
     imwrite(bottom_im, name);
 end
+
+% Calculate accuracy
+num_test = length(y_test);
+labels = zeros(num_test, 1);
+for i =1:num_test
+    [~,I] = min([find(idx{1} == i), find(idx{2} == i), find(idx{3} == i), find(idx{4} == i), find(idx{5} == i)]);
+    labels(i) = keep(I);
+end
+accuracy = sum(labels == y_test)/num_test;
 
 %MAP over all classifiers
 MAP = mean(average_precisions);
